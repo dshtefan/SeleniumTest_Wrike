@@ -14,17 +14,20 @@ public class MainPage {
     private By emailField = By.xpath("//label/input");
     private By createAccButton = By.xpath("//button[text()='Create my Wrike account']");
 
-    public MainPage typeEmail(String email) {
+    public MainPage fillEmail(String email) {
         driver.findElement(emailField).sendKeys(email);
         return this;
     }
 
-    public QuestionsPage createAccount(String email) {
-        driver.findElement(getStartedButton).click();
-        typeEmail(email);
+    public QuestionsPage createAccount() {
         driver.findElement(createAccButton).click();
         return new QuestionsPage(driver);
     }
+    public MainPage clickGetStarted() {
+        driver.findElement(getStartedButton).click();
+        return this;
+    }
+
 
 
 
