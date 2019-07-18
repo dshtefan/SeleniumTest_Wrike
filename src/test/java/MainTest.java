@@ -17,9 +17,21 @@ public class MainTest {
 
     private WebDriver driver;
     private WebDriverWait wait;
+    private Random random = new Random();
 
     private void explicitWait(String xpath) {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
+    }
+
+    private String getRandonString(int length){
+        int leftLimit = (int)'a';
+        int rightLimit = (int)'z';
+        StringBuilder builder = new StringBuilder(length);
+        for(int i = 0; i < length; i++) {
+            int randomChar = leftLimit + (int)(random.nextFloat() * (rightLimit - leftLimit + 1));
+            builder.append((char) randomChar);
+        }
+        return builder.toString();
     }
 
     @Before
@@ -38,7 +50,7 @@ public class MainTest {
         //2
         mainPage.clickGetStarted();
         //3
-        mainPage.fillEmail("weqeqweqwe@wqdw.ru");
+        mainPage.fillEmail("aaaaaaaaaaaaaaa" + "+wpt@wriketask.qaa");
         //4
         QuestionsPage questionsPage = mainPage.createAccount();
         explicitWait("//*[contains(text(), 'Submit results')]");
@@ -46,14 +58,15 @@ public class MainTest {
         List<WebElement> questions = questionsPage.getQuestions();
         for(int i = 0; i < questions.size(); i++) {
             List<WebElement> answersList = questionsPage.getAnswerList(i);
-            Random rand = new Random();
             System.out.println(answersList.size());
-            int n = rand.nextInt(answersList.size());
+            int n = random.nextInt(answersList.size());
             questionsPage.selectAnswer(i, n);
-            if(questionsPage.isEntryField(i, n)){
-                questionsPage.fillEntryField(i, n, "aaa");
+            if(questionsPage.isEntryField(i, n)) {
+                questionsPage.fillEntryField(i, n, getRandonString(10));
             }
         }
+        questionsPage.clickSubmit();
+        wait.until(ExpectedConditions.visibilityOf(questionsPage.getSuccessMessage()));
     }
 
     @After
