@@ -1,5 +1,6 @@
 import com.wrike.pages.MainPage;
 import com.wrike.pages.QuestionsPage;
+import io.qameta.allure.Step;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,38 +47,73 @@ public class MainTest {
     @Test
     public void myTest() {
         //1
-        driver.get("https://www.wrike.com/");
-        MainPage mainPage = new MainPage(driver);
+        MainPage mainPage = step1();
         //2
-        mainPage.clickGetStarted();
+        step2(mainPage);
         //3
-        mainPage.fillEmail(getRandonString(10) + "+wpt@wriketask.qaa");
+        step3(mainPage);
         //4
-        QuestionsPage questionsPage = mainPage.createAccount();
+        QuestionsPage questionsPage = step4(mainPage);
+        //5
+        step5(questionsPage);
+        //6
+        step6(questionsPage);
+    }
+
+    @Step
+    public MainPage step1() {
+        driver.get("https://www.wrike.com/");
+        return new MainPage(driver);
+    }
+
+    @Step
+    public MainPage step2(MainPage page) {
+        page.clickGetStarted();
+        return page;
+    }
+
+    @Step
+    public MainPage step3(MainPage page) {
+        page.fillEmail(getRandonString(10) + "+wpt@wriketask.qaa");
+        return page;
+    }
+
+    @Step
+    public QuestionsPage step4(MainPage page) {
+        QuestionsPage questionsPage = page.createAccount();
         explicitWait("//*[contains(text(), 'Submit results')]");
         Assert.assertNotEquals("https://www.wrike.com/", driver.getCurrentUrl());
-        //5
-        List<WebElement> questions = questionsPage.getQuestions();
+        return questionsPage;
+    }
+
+    @Step
+    public QuestionsPage step5(QuestionsPage page) {
+        List<WebElement> questions = page.getQuestions();
         for(int i = 0; i < questions.size(); i++) {
-            List<WebElement> answersList = questionsPage.getAnswerList(i);
+            List<WebElement> answersList = page.getAnswerList(i);
             int n = random.nextInt(answersList.size());
-            questionsPage.selectAnswer(i, n);
-            if(questionsPage.isEntryField(i, n))
-                questionsPage.fillEntryField(i, n, getRandonString(10));
+            page.selectAnswer(i, n);
+            if(page.isEntryField(i, n))
+                page.fillEntryField(i, n, getRandonString(12));
         }
-        questionsPage.clickSubmit();
-        wait.until(ExpectedConditions.visibilityOf(questionsPage.getSuccessMessage()));
-        Assert.assertTrue(questionsPage.getSuccessMessage().isDisplayed());
-        //6
-        WebElement followUs = questionsPage.getFollowUsSection();
+        page.clickSubmit();
+        wait.until(ExpectedConditions.visibilityOf(page.getSuccessMessage()));
+        Assert.assertTrue(page.getSuccessMessage().isDisplayed());
+        return page;
+    }
+
+    @Step
+    public QuestionsPage step6(QuestionsPage page) {
+        WebElement followUs = page.getFollowUsSection();
         Assert.assertTrue(
                 followUs.findElements(By.xpath(".//*[@href='https://twitter.com/wrike']")).size() > 0
         );
         Assert.assertTrue(
                 followUs.findElements(By.xpath("//*[@href='https://twitter.com/wrike']" +
-                "//*[local-name() = 'use' and " +
-                "@*='/content/themes/wrike/dist/img/sprite/vector/footer-icons.symbol.svg?v2#twitter']")).size() > 0
+                        "//*[local-name() = 'use' and " +
+                        "@*='/content/themes/wrike/dist/img/sprite/vector/footer-icons.symbol.svg?v2#twitter']")).size() > 0
         );
+        return page;
     }
 
     @After
