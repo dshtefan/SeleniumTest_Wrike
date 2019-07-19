@@ -5,7 +5,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
-import java.util.Random;
 
 public class QuestionsPage {
     private WebDriver driver;
@@ -21,6 +20,7 @@ public class QuestionsPage {
     private By answerInput = By.xpath(".//*[@class='switch__input' or @class='survey-question-radio__other-input']");
     private By submitButton = By.xpath("//*[contains(text(), 'Submit results')]");
     private By successMessage = By.xpath("//*[@class='survey-success' or @class='resend-page__cell--success']");
+    private By followUsSection = By.xpath("//*[@class='wg-footer__group wg-footer__group--social']");
 
     public List<WebElement> getQuestions(){
         questions = driver.findElements(questionDiv);
@@ -60,5 +60,9 @@ public class QuestionsPage {
 
     public WebElement getSuccessMessage() {
         return driver.findElement(successMessage);
+    }
+
+    public WebElement getFollowUsSection() {
+        return driver.findElement(followUsSection);
     }
 }

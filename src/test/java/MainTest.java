@@ -1,6 +1,7 @@
 import com.wrike.pages.MainPage;
 import com.wrike.pages.QuestionsPage;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -50,28 +51,38 @@ public class MainTest {
         //2
         mainPage.clickGetStarted();
         //3
-        mainPage.fillEmail("aaaaaaaaaaaaaaa" + "+wpt@wriketask.qaa");
+        mainPage.fillEmail(getRandonString(10) + "+wpt@wriketask.qaa");
         //4
         QuestionsPage questionsPage = mainPage.createAccount();
         explicitWait("//*[contains(text(), 'Submit results')]");
+        Assert.assertNotEquals("https://www.wrike.com/", driver.getCurrentUrl());
         //5
         List<WebElement> questions = questionsPage.getQuestions();
         for(int i = 0; i < questions.size(); i++) {
             List<WebElement> answersList = questionsPage.getAnswerList(i);
-            System.out.println(answersList.size());
             int n = random.nextInt(answersList.size());
             questionsPage.selectAnswer(i, n);
-            if(questionsPage.isEntryField(i, n)) {
+            if(questionsPage.isEntryField(i, n))
                 questionsPage.fillEntryField(i, n, getRandonString(10));
-            }
         }
         questionsPage.clickSubmit();
         wait.until(ExpectedConditions.visibilityOf(questionsPage.getSuccessMessage()));
+        Assert.assertTrue(questionsPage.getSuccessMessage().isDisplayed());
+        //6
+        WebElement followUs = questionsPage.getFollowUsSection();
+        Assert.assertTrue(
+                followUs.findElements(By.xpath(".//*[@href='https://twitter.com/wrike']")).size() > 0
+        );
+        Assert.assertTrue(
+                followUs.findElements(By.xpath("//*[@href='https://twitter.com/wrike']" +
+                "//*[local-name() = 'use' and " +
+                "@*='/content/themes/wrike/dist/img/sprite/vector/footer-icons.symbol.svg?v2#twitter']")).size() > 0
+        );
     }
 
     @After
     public void tearDown() {
-//        driver.quit();
+        driver.quit();
     }
 
 }
